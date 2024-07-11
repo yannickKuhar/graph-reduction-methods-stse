@@ -70,17 +70,17 @@ def get_graph_from_incidence(E, w=None):
         am = (E @ torch.diag(w) @ E.T !=0).int()
     am = am.numpy()
     np.fill_diagonal(am, 0)
-    g_ = nx.from_numpy_matrix(am)
+    g_ = nx.from_numpy_array(am)
     return g_
 
 
 def vn_entropy(k, eps=1e-8):
 
     k = k/torch.trace(k)  # normalization
+    upper = True
+    #L, V = torch.linalg.eigh(A, UPLO='U' if upper else 'L')
 
-    #vL, V = torch.linalg.eigh(A, UPLO='U' if upper else 'L')
-
-    eigv = torch.abs(torch.symeig(k, eigenvectors=True)[0])
+    eigv = torch.abs(torch.linalg.eigh(k, UPLO='U' if upper else 'L')[0])
     entropy = - torch.sum(eigv[eigv>0]*torch.log(eigv[eigv>0]+eps))
     return entropy
 
